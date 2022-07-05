@@ -6,3 +6,10 @@ class TestSchema(BaseModel):
     world: int
 
     __test__ = False
+
+
+class AnotherSchema(BaseModel):
+    nintendo: str
+    atari: str
+
+    __test__ = False
