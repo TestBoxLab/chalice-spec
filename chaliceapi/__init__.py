@@ -47,8 +47,8 @@ class ChalicePlugin(BasePlugin):
     For example...
 
     @app.route('/hello',
-               request_body_model=APydanticModel,
-               response_body_model=APydanticModel)
+               post_body_model=APydanticModel,
+               post_response_body=APydanticModel)
     def hello():
         return {"world": "The quick brown fox jumps over the lazy dog."}
     """
@@ -131,7 +131,6 @@ class ChalicePlugin(BasePlugin):
             :param path: The path to use.
             :param kwargs: Additional Chalice kwargs and APIspec definitions.
             """
-            print("HELLO AGAIN")
             methods = kwargs.get("methods", ["GET"])
             methods = list(map(str.lower, methods))
 
@@ -146,13 +145,8 @@ class ChalicePlugin(BasePlugin):
                     **self._handle_response(spec, method, kwargs),
                 }
 
-            # try:
             return_value = original_route(path, **kwargs)
-            print(return_value)
             spec.path(path, operations=operations)
             return return_value
-            # except TypeError:
-            #     print("HELLOL!!!")
-            #     raise
 
         chalice_app.route = route
