@@ -1,3 +1,4 @@
+import pytest
 from apispec import APISpec
 from chalice import Chalice
 
@@ -240,3 +241,39 @@ def test_summaries():
         "info": {"title": "Test Schema", "version": "0.0.0"},
         "openapi": "3.0.1",
     }
+
+
+# Test 6: test shorthand
+def test_shorthand():
+    app, spec = setup_test()
+
+    @app.route("/", methods=["POST"], docs=Docs(request=TestSchema, response=AnotherSchema))
+    def post():
+        pass
+
+    @app.route("/", methods=["PUT"], docs=Docs(request=AnotherSchema, response=TestSchema))
+    def put():
+        pass
+
+    assert spec.to_dict() == {'paths': {'/': {'post': {'requestBody': {'content': {'application/json': {'schema': {'$ref': '#/components/schemas/TestSchema'}}}}, 'responses': {'200': {'description': 'Success', 'content': {'application/json': {'schema': {'$ref': '#/components/schemas/AnotherSchema'}}}}}}, 'put': {'requestBody': {'content': {'application/json': {'schema': {'$ref': '#/components/schemas/AnotherSchema'}}}}, 'responses': {'200': {'description': 'Success', 'content': {'application/json': {'schema': {'$ref': '#/components/schemas/TestSchema'}}}}}}}}, 'info': {'title': 'Test Schema', 'version': '0.0.0'}, 'openapi': '3.0.1', 'components': {'schemas': {'TestSchema': {'title': 'TestSchema', 'type': 'object', 'properties': {'hello': {'title': 'Hello', 'type': 'string'}, 'world': {'title': 'World', 'type': 'integer'}}, 'required': ['hello', 'world']}, 'AnotherSchema': {'title': 'AnotherSchema', 'type': 'object', 'properties': {'nintendo': {'title': 'Nintendo', 'type': 'string'}, 'atari': {'title': 'Atari', 'type': 'string'}}, 'required': ['nintendo', 'atari']}}}}
+
+
+# Test 7: test for contract violations
+def test_contract_violations():
+    app, spec = setup_test()
+
+    with pytest.raises(TypeError):
+        @app.route("/", methods=["GET", "POST"], docs=Docs(request=TestSchema))
+        def test():
+            pass
+
+    with pytest.raises(TypeError):
+        @app.route("/", methods=["GET"], docs=Docs(request=TestSchema, get=Op()))
+        def test():
+            pass
+
+    with pytest.raises(TypeError):
+        Op(response=Resp(model=TestSchema), responses=[Resp(model=TestSchema)])
+
+    with pytest.raises(TypeError):
+        Op(responses=[Resp(code=200, model=AnotherSchema), Resp(code=200, model=TestSchema)])
