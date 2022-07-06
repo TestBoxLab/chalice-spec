@@ -85,7 +85,9 @@ class Docs:
         if self.request or self.response or self.responses:
             for method in self.methods:
                 if getattr(self, method):
-                    raise TypeError("You must choose either a short-hand or long-hand Docs, not both.")
+                    raise TypeError(
+                        "You must choose either a short-hand or long-hand Docs, not both."
+                    )
 
     @classmethod
     def _build_operation_from_operation(cls, method: Operation, spec: APISpec):
@@ -107,7 +109,9 @@ class Docs:
 
             for code, response in method.responses.items():
                 if response.model.__name__ not in spec.components.schemas:
-                    spec.components.schema(response.model.__name__, model=response.model)
+                    spec.components.schema(
+                        response.model.__name__, model=response.model
+                    )
                 responses[code] = {
                     "description": response.description,
                     "content": {
@@ -133,24 +137,30 @@ class Docs:
             return cls._build_operation_from_model(method, spec)
 
     def _build_simple_operation(self, spec: APISpec):
-        return self._build_operation_from_operation(Operation(request=self.request,
-                                                              response=self.response,
-                                                              responses=self.responses),
-                                                    spec)
+        return self._build_operation_from_operation(
+            Operation(
+                request=self.request, response=self.response, responses=self.responses
+            ),
+            spec,
+        )
 
     def build_operations(self, spec: APISpec, methods: List[str]):
         operations = {}
 
         if self.request or self.responses or self.response:
             if len(methods) != 1:
-                raise TypeError("You can only use Docs short-hand for single-method API routes.")
+                raise TypeError(
+                    "You can only use Docs short-hand for single-method API routes."
+                )
 
             operations[methods[0].lower()] = self._build_simple_operation(spec)
 
         else:
             for method in self.methods:
                 if getattr(self, method):
-                    operations[method] = self._build_operation(getattr(self, method), spec)
+                    operations[method] = self._build_operation(
+                        getattr(self, method), spec
+                    )
 
         return operations
 
