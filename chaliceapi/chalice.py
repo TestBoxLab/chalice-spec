@@ -1,6 +1,6 @@
 from apispec import BasePlugin, APISpec
 
-from chaliceapi.docs import Docs
+from chaliceapi.docs import Docs, Operation
 
 
 class ChalicePlugin(BasePlugin):
@@ -39,7 +39,7 @@ class ChalicePlugin(BasePlugin):
             """
             docs: Docs = kwargs.pop("docs", None)
             if docs:
-                operations = docs.build_operations(spec)
+                operations = docs.build_operations(spec, kwargs.get('methods', ['get']))
                 spec.path(path, operations=operations, summary=docs.summary)
 
             return original_route(path, **kwargs)
