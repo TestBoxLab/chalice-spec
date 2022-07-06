@@ -1,6 +1,6 @@
-# chalice-api
+# chalice-spec
 
-[![Python package](https://github.com/TestBoxLab/chalice-api/actions/workflows/test.yml/badge.svg)](https://github.com/TestBoxLab/chalice-api/actions/workflows/test.yml)
+[![Python package](https://github.com/TestBoxLab/chalice-spec/actions/workflows/test.yml/badge.svg)](https://github.com/TestBoxLab/chalice-spec/actions/workflows/test.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 **Chalice × APISpec × Pydantic plug-ins**
@@ -9,10 +9,10 @@ Combines the power of Chalice, APISpec, and Pydantic to make AWS Chalice apps ea
 
 ## Installation
 
-First, add chalice-api:
+First, add chalice-spec:
 
 ```shell
-poetry add chalice_api
+poetry add chalice_spec
 ```
 
 We consider Chalice, APISpec, and Pydantic "peer dependencies." We only include them as dev
