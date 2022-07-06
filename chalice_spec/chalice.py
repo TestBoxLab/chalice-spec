@@ -1,6 +1,6 @@
 from apispec import BasePlugin, APISpec
 
-from chaliceapi.docs import Docs, Operation
+from chalice_spec.docs import Docs, Operation
 
 
 class ChalicePlugin(BasePlugin):
