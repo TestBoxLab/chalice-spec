@@ -1,6 +1,6 @@
 from apispec import APISpec
 
-from chaliceapi.pydantic import PydanticPlugin
+from chalice_spec.pydantic import PydanticPlugin
 from tests.schema import TestSchema
 
 
