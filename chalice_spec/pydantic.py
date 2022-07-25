@@ -1,6 +1,7 @@
 from typing import Any, Union
 
 from apispec import BasePlugin, APISpec
+from apispec.exceptions import DuplicateComponentNameError
 from pydantic import BaseModel
 
 
@@ -33,7 +34,10 @@ class PydanticPlugin(BasePlugin):
             spec: Union[APISpec, None] = kwargs.pop("spec", None)
             if spec and "definitions" in schema:
                 for (k, v) in schema["definitions"].items():
-                    spec.components.schema(k, v)
+                    try:
+                        spec.components.schema(k, v)
+                    except DuplicateComponentNameError:
+                        pass
 
             if "definitions" in schema:
                 del schema["definitions"]
