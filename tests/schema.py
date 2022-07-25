@@ -13,3 +13,16 @@ class AnotherSchema(BaseModel):
     atari: str
 
     __test__ = False
+
+
+class MoreDeeplyNestedSchema(BaseModel):
+    base_type: str
+
+
+class DeeplyNestedSchema(BaseModel):
+    more_deeply: MoreDeeplyNestedSchema
+
+
+class NestedSchema(BaseModel):
+    hello: str
+    deeply: DeeplyNestedSchema

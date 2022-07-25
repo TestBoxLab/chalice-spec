@@ -95,7 +95,9 @@ class Docs:
 
         if method.request:
             if method.request.__name__ not in spec.components.schemas:
-                spec.components.schema(method.request.__name__, model=method.request)
+                spec.components.schema(
+                    method.request.__name__, model=method.request, spec=spec
+                )
             operation["requestBody"] = {
                 "content": {
                     "application/json": {
@@ -110,7 +112,9 @@ class Docs:
             for code, response in method.responses.items():
                 if response.model.__name__ not in spec.components.schemas:
                     spec.components.schema(
-                        response.model.__name__, model=response.model
+                        response.model.__name__,
+                        model=response.model,
+                        spec=spec,
                     )
                 responses[code] = {
                     "description": response.description,
