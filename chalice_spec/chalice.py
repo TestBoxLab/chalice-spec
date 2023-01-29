@@ -23,7 +23,6 @@ class ChalicePlugin(BasePlugin):
         super(ChalicePlugin, self).__init__()
         self._generate_default_docs = generate_default_docs
 
-
     def init_spec(self, spec: APISpec) -> None:
         """
         When we initialize the spec, we should also monkeypatch the Chalice app
@@ -47,7 +46,19 @@ class ChalicePlugin(BasePlugin):
             methods = [method.lower() for method in kwargs.get("methods", ["get"])]
 
             if docs is None and self._generate_default_docs:
-                docs = Docs(**{method: Operation(response=BaseModel, request=(None if method in ['get', 'delete', 'head', 'options'] else BaseModel)) for method in methods})
+                docs = Docs(
+                    **{
+                        method: Operation(
+                            response=BaseModel,
+                            request=(
+                                None
+                                if method in ["get", "delete", "head", "options"]
+                                else BaseModel
+                            ),
+                        )
+                        for method in methods
+                    }
+                )
 
             if docs:
                 operations = docs.build_operations(spec, methods)
