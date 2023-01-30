@@ -36,6 +36,12 @@ spec = APISpec(chalice_app=app,
                plugins=[PydanticPlugin(), ChalicePlugin()])
 ```
 
+If you use:
+```python
+ChalicePlugin(generate_default_docs=True)
+```
+the plugin will generate empty docs (with empty request and response schemas) for every endpoint that you've defined in your app. This can be useful as a starting point / overview while developing.
+
 ## Usage
 
 To document your API, use your existing Pydantic models and add kwargs to Chalice decorators.

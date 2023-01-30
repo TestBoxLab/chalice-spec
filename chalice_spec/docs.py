@@ -53,7 +53,7 @@ Method = Union[Type[BaseModel], Operation]
 
 
 class Docs:
-    methods = ["get", "post", "put", "delete", "head", "options"]
+    methods = ["get", "post", "put", "patch", "delete", "head", "options"]
 
     def __init__(
         self,
@@ -61,6 +61,7 @@ class Docs:
         get: Method = None,
         post: Method = None,
         put: Method = None,
+        patch: Method = None,
         delete: Method = None,
         head: Method = None,
         options: Method = None,
@@ -77,6 +78,7 @@ class Docs:
         self.get = get
         self.post = post
         self.put = put
+        self.patch = patch
         self.delete = delete
         self.head = head
         self.options = options

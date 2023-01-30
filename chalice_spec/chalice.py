@@ -1,4 +1,5 @@
 from apispec import BasePlugin, APISpec
+from pydantic import BaseModel
 
 from chalice_spec.docs import Docs, Operation
 
@@ -17,6 +18,10 @@ class ChalicePlugin(BasePlugin):
     def hello():
         return {"world": "The quick brown fox jumps over the lazy dog."}
     """
+
+    def __init__(self, generate_default_docs: bool = False):
+        super(ChalicePlugin, self).__init__()
+        self._generate_default_docs = generate_default_docs
 
     def init_spec(self, spec: APISpec) -> None:
         """
@@ -38,8 +43,25 @@ class ChalicePlugin(BasePlugin):
             :param kwargs: Additional Chalice kwargs and APIspec definitions.
             """
             docs: Docs = kwargs.pop("docs", None)
+            methods = [method.lower() for method in kwargs.get("methods", ["get"])]
+
+            if docs is None and self._generate_default_docs:
+                docs = Docs(
+                    **{
+                        method: Operation(
+                            response=BaseModel,
+                            request=(
+                                None
+                                if method in ["get", "delete", "head", "options"]
+                                else BaseModel
+                            ),
+                        )
+                        for method in methods
+                    }
+                )
+
             if docs:
-                operations = docs.build_operations(spec, kwargs.get("methods", ["get"]))
+                operations = docs.build_operations(spec, methods)
                 spec.path(path, operations=operations, summary=docs.summary)
 
             return original_route(path, **kwargs)
