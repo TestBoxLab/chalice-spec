@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chalice-spec"
-version = "0.1.3"
+version = "0.1.4"
 description = "Chalice x APISpec x Pydantic plug-ins"
 authors = ["Jake Wood <jake@testbox.com>"]
 repository = "https://github.com/TestBoxLab/chalice-spec"
@@ -10,7 +10,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-apispec = "^5.2.2"
+apispec = "^6.0.2"
 
 [tool.poetry.dev-dependencies]
 pydantic = "^1.9.1"
