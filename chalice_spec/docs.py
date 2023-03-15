@@ -21,6 +21,7 @@ class Operation:
         summary: str = None,
         description: str = None,
         tags: List[str] = None,
+        parameters: List[Dict] = None,
         request: Optional[Type[BaseModel]] = None,
         response: Optional[Union[Response, Type[BaseModel]]] = None,
         responses: Optional[List[Response]] = None,
@@ -28,6 +29,7 @@ class Operation:
         self.summary = summary
         self.description = description
         self.tags = tags
+        self.parameters = parameters
 
         self.request = request
 
@@ -143,6 +145,8 @@ class Docs:
             operation["description"] = method.description
         if method.tags:
             operation["tags"] = method.tags
+        if method.parameters:
+            operation["parameters"] = method.parameters
 
         return operation
 
