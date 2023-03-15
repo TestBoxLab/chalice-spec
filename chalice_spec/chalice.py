@@ -1,7 +1,9 @@
+import re
+import os
 from apispec import BasePlugin, APISpec
 from pydantic import BaseModel
 
-from chalice_spec.docs import Docs, Operation
+from chalice_spec.docs import Docs, Operation, trim_docstring
 
 
 class ChalicePlugin(BasePlugin):
@@ -42,28 +44,77 @@ class ChalicePlugin(BasePlugin):
             :param methods: the allowable methods and their documentation
             :param kwargs: Additional Chalice kwargs and APIspec definitions.
             """
-            docs: Docs = kwargs.pop("docs", None)
-            methods = [method.lower() for method in kwargs.get("methods", ["get"])]
 
-            if docs is None and self._generate_default_docs:
-                docs = Docs(
-                    **{
-                        method: Operation(
-                            response=BaseModel,
-                            request=(
-                                None
-                                if method in ["get", "delete", "head", "options"]
-                                else BaseModel
-                            ),
+            def route_decorator(func):
+                docs: Docs = kwargs.pop("docs", None)
+                methods = [method.lower() for method in kwargs.get("methods", ["get"])]
+
+                if docs is None and self._generate_default_docs:
+                    docs = Docs(
+                        **{
+                            method: Operation(
+                                response=BaseModel,
+                                request=(
+                                    None
+                                    if method in ["get", "delete", "head", "options"]
+                                    else BaseModel
+                                ),
+                            )
+                            for method in methods
+                        }
+                    )
+
+                if docs:
+                    operations = docs.build_operations(spec, methods)
+
+                    # Infer path parameters
+                    get_params = r"{([^}]+)}"
+                    path_params = []
+                    for param in re.findall(get_params, path):
+                        path_params.append(
+                            {
+                                "in": "path",
+                                "name": param,
+                                "schema": {"type": "string"},
+                                "required": True,
+                            }
                         )
-                        for method in methods
-                    }
-                )
 
-            if docs:
-                operations = docs.build_operations(spec, methods)
-                spec.path(path, operations=operations, summary=docs.summary)
+                    # Infer tags
+                    for operation in operations:
+                        if (
+                            "tags" not in operations[operation]
+                            or not operations[operation]["tags"]
+                        ):
+                            operations[operation]["tags"] = [
+                                "/" + path.lstrip("/").split("/", 1)[0]
+                            ]
 
-            return original_route(path, **kwargs)
+                    # Infer summary and description from route docstrings
+                    if func.__doc__:
+                        split_docstring = trim_docstring(func.__doc__).split("\n", 1)
+                        for operation in operations:
+                            if (
+                                "summary" not in operations[operation]
+                                or not operations[operation]["summary"]
+                            ):
+                                operations[operation]["summary"] = split_docstring[0]
+                            if (
+                                "description" not in operations[operation]
+                                or not operations[operation]["description"]
+                            ) and len(split_docstring) == 2:
+                                operations[operation]["description"] = split_docstring[
+                                    1
+                                ].strip()
+
+                    spec.path(
+                        path,
+                        operations=operations,
+                        summary=docs.summary,
+                        parameters=path_params,
+                    )
+                return original_route(path, **kwargs)(func)
+
+            return route_decorator
 
         chalice_app.route = route
