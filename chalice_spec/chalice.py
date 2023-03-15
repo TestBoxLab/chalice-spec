@@ -1,5 +1,4 @@
 import re
-import os
 from apispec import BasePlugin, APISpec
 from pydantic import BaseModel
 
