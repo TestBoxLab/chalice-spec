@@ -193,6 +193,7 @@ class Docs:
 Resp = Response
 Op = Operation
 
+
 # From: https://peps.python.org/pep-0257/#handling-docstring-indentation
 def trim_docstring(docstring):
     if not docstring:
