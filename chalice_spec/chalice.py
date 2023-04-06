@@ -83,7 +83,7 @@ class ChalicePlugin(BasePlugin):
                     for operation in operations:
                         if (
                             "tags" not in operations[operation]
-                            or not operations[operation]["tags"]
+                            or operations[operation]["tags"] is None
                         ):
                             operations[operation]["tags"] = [
                                 "/" + path.lstrip("/").split("/", 1)[0]
@@ -95,12 +95,12 @@ class ChalicePlugin(BasePlugin):
                         for operation in operations:
                             if (
                                 "summary" not in operations[operation]
-                                or not operations[operation]["summary"]
+                                or operations[operation]["summary"] is None
                             ):
                                 operations[operation]["summary"] = split_docstring[0]
                             if (
                                 "description" not in operations[operation]
-                                or not operations[operation]["description"]
+                                or operations[operation]["description"] is None
                             ) and len(split_docstring) == 2:
                                 operations[operation]["description"] = split_docstring[
                                     1
