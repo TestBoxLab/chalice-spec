@@ -1,39 +1,22 @@
 import pytest
 from apispec import APISpec
-from chalice import Chalice, Blueprint
+from chalice import Chalice
 
-from chalice_spec.chalice import ChaliceWithSpec
 from chalice_spec.docs import Docs, Resp, Op
 from chalice_spec.chalice_legacy import ChalicePlugin
 from chalice_spec.pydantic import PydanticPlugin
 from tests.schema import TestSchema, AnotherSchema
 
 
-# def setup_test():
-#     spec = APISpec(
-#         title="Test Schema",
-#         openapi_version="3.0.1",
-#         version="0.0.0",
-#         plugins=[PydanticPlugin(), ChalicePlugin()],
-#     )
-#
-#     app = ChaliceWithSpec(app_name="test", spec=spec)
-
-    # blueprint = Blueprint(__name__)
-
-    # app.register_blueprint(blueprint, url_prefix="/blueprint")
-
-    # return app, blueprint, spec
-
-
 def setup_test():
+    app = Chalice(app_name="test")
     spec = APISpec(
         title="Test Schema",
         openapi_version="3.0.1",
         version="0.0.0",
-        plugins=[PydanticPlugin()],
+        chalice_app=app,
+        plugins=[PydanticPlugin(), ChalicePlugin()],
     )
-    app = ChaliceWithSpec(app_name="test", spec=spec)
     return app, spec
 
 
@@ -376,164 +359,3 @@ def test_contract_violations():
                 Resp(code=200, model=TestSchema),
             ]
         )
-
-
-
-# def test_blueprints_basic():
-#     app, blueprint, spec = setup_test()
-#
-#     @blueprint.route("/", docs=Docs(get=TestSchema))
-#     def the_blueprint_route():
-#         pass
-#
-#     assert spec.to_dict() == {
-#         "paths": {
-#             "/blueprint/": {
-#                 "get": {
-#                     "responses": {
-#                         "200": {
-#                             "description": "Success",
-#                             "content": {
-#                                 "application/json": {
-#                                     "schema": {
-#                                         "$ref": "#/components/schemas/TestSchema"
-#                                     }
-#                                 }
-#                             },
-#                         }
-#                     }
-#                 }
-#             }
-#         },
-#         "info": {"title": "Test Schema", "version": "0.0.0"},
-#         "openapi": "3.0.1",
-#         "components": {
-#             "schemas": {
-#                 "TestSchema": {
-#                     "title": "TestSchema",
-#                     "type": "object",
-#                     "properties": {
-#                         "hello": {"title": "Hello", "type": "string"},
-#                         "world": {"title": "World", "type": "integer"},
-#                     },
-#                     "required": ["hello", "world"],
-#                 }
-#             }
-#         },
-#     }
-#
-#
-# def test_blueprints_more_complex():
-#     app, blueprint, spec = setup_test()
-#
-#     @blueprint.route("/hello-world/deep", docs=Docs(get=TestSchema))
-#     def the_blueprint_route():
-#         pass
-#
-#     assert spec.to_dict() == {
-#         "paths": {
-#             "/blueprint/hello-world/deep": {
-#                 "get": {
-#                     "responses": {
-#                         "200": {
-#                             "description": "Success",
-#                             "content": {
-#                                 "application/json": {
-#                                     "schema": {
-#                                         "$ref": "#/components/schemas/TestSchema"
-#                                     }
-#                                 }
-#                             },
-#                         }
-#                     }
-#                 }
-#             }
-#         },
-#         "info": {"title": "Test Schema", "version": "0.0.0"},
-#         "openapi": "3.0.1",
-#         "components": {
-#             "schemas": {
-#                 "TestSchema": {
-#                     "title": "TestSchema",
-#                     "type": "object",
-#                     "properties": {
-#                         "hello": {"title": "Hello", "type": "string"},
-#                         "world": {"title": "World", "type": "integer"},
-#                     },
-#                     "required": ["hello", "world"],
-#                 }
-#             }
-#         },
-#     }
-#
-#
-# def test_multiple_blueprints():
-#     app = Chalice(app_name="test")
-#
-#     from .chalicelib.blueprint_one import blueprint_one
-#     from .chalicelib.blueprint_two import blueprint_two
-#
-#     # IMPORTANT: the order matters here, because the monkeypatching
-#     # must happen *before* blueprints are registered
-#     spec = APISpec(
-#         title="Test Schema",
-#         openapi_version="3.0.1",
-#         version="0.0.0",
-#         chalice_app=app,
-#         plugins=[PydanticPlugin(), ChalicePlugin()],
-#     )
-#
-#     app.register_blueprint(blueprint_one, url_prefix="/blueprint")
-#     app.register_blueprint(blueprint_two)
-#
-#     assert spec.to_dict() == {
-#         "paths": {
-#             "/blueprint/hello-world/deep": {
-#                 "get": {
-#                     "responses": {
-#                         "200": {
-#                             "description": "Success",
-#                             "content": {
-#                                 "application/json": {
-#                                     "schema": {
-#                                         "$ref": "#/components/schemas/TestSchema"
-#                                     }
-#                                 }
-#                             },
-#                         }
-#                     }
-#                 }
-#             },
-#             "/another-world/post": {
-#                 "post": {
-#                     "responses": {
-#                         "200": {
-#                             "description": "Success",
-#                             "content": {
-#                                 "application/json": {
-#                                     "schema": {
-#                                         "$ref": "#/components/schemas/TestSchema"
-#                                     }
-#                                 }
-#                             },
-#                         }
-#                     }
-#                 }
-#             },
-#         },
-#         "info": {"title": "Test Schema", "version": "0.0.0"},
-#         "openapi": "3.0.1",
-#         "components": {
-#             "schemas": {
-#                 "TestSchema": {
-#                     "title": "TestSchema",
-#                     "type": "object",
-#                     "properties": {
-#                         "hello": {"title": "Hello", "type": "string"},
-#                         "world": {"title": "World", "type": "integer"},
-#                     },
-#                     "required": ["hello", "world"],
-#                 }
-#             }
-#         },
-#     }
