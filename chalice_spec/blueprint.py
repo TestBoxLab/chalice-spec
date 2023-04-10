@@ -39,7 +39,7 @@ def chalice_spec_blueprint(spec: APISpec, enable_swagger: bool = False):
                     <script>
                       window.onload = () => {
                         window.ui = SwaggerUIBundle({
-                          url: '/openapi.json',
+                          url: './openapi.json',
                           dom_id: '#swagger-ui',
                         });
                       };
