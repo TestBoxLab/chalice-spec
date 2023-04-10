@@ -8,6 +8,12 @@ DEFAULT_CODE = 200
 
 
 class Response:
+    """
+    A response that your API might provide. Provide the Pydantic model,
+    plus the HTTP status code that would be returned with this model,
+    and an optional description.
+    """
+
     def __init__(self, model: type, code: int = 200, description: str = "Success"):
         self.model = model
         self.code = code
@@ -15,6 +21,11 @@ class Response:
 
 
 class Operation:
+    """
+    Represents a single Operation, as defined by OpenAPI, which is generally
+    a request, plus a set of responses.
+    """
+
     def __init__(
         self,
         request: Optional[Type[BaseModel]] = None,
@@ -53,6 +64,11 @@ Method = Union[Type[BaseModel], Operation]
 
 
 class Docs:
+    """
+    Chalice-Spec documentation for an API endpoint that will eventually
+    result in an OpenAPI spec!
+    """
+
     methods = ["get", "post", "put", "patch", "delete", "head", "options"]
 
     def __init__(

@@ -53,6 +53,27 @@ class ChaliceWithSpec(Chalice):
     """
     A Chalice app that has been augmented with chalice-spec to enable
     easy OpenAPI documentation.
+
+    Here is a simple example that makes some assumptions...
+
+    from chalice_spec import ChaliceWithSpec, Docs, Op
+
+    app = ChaliceWithSpec(spec=an_api_spec_previously_defined)
+
+    @app.route('/hello',
+               docs=APydanticModel)
+    def hello():
+        return {"world": "The quick brown fox jumps over the lazy dog."}
+
+    However, you will more likely want to utilize the full Docs object.
+
+    @app.route("/world", docs=Docs(get=APydanticModel,
+                                   post=Op(request=MyRequestModel,
+                                           response=MyResponseModel)))
+    def world():
+        if app.current_request.method == "get":
+            return {"an object": "that matches", "the schema": "APydantcModel"}
+        # and so on!
     """
 
     def __init__(self, app_name: str, spec: APISpec, generate_default_docs=False):
