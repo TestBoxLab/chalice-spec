@@ -143,7 +143,7 @@ def test_two_blueprints():
                         }
                     }
                 }
-            }
+            },
         },
         "info": {"title": "Test Schema", "version": "0.0.0"},
         "openapi": "3.0.1",

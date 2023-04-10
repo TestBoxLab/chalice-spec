@@ -78,9 +78,11 @@ class ChalicePlugin(BasePlugin):
 
         original_register_blueprint = chalice_app.register_blueprint
 
-        def register_blueprint(blueprint: Blueprint,
-                               name_prefix: Optional[str] = None,
-                               url_prefix: Optional[str] = None):
+        def register_blueprint(
+            blueprint: Blueprint,
+            name_prefix: Optional[str] = None,
+            url_prefix: Optional[str] = None,
+        ):
             """
             Register a new blueprint. Blueprints use something akin to an "inversion of control."
             The main Chalice app maintains no state of the blueprints that are registered to it.
@@ -88,7 +90,9 @@ class ChalicePlugin(BasePlugin):
             when looking at building our spec.
             """
             blueprint.route = blueprint_route(url_prefix)
-            return original_register_blueprint(blueprint, name_prefix=name_prefix, url_prefix=url_prefix)
+            return original_register_blueprint(
+                blueprint, name_prefix=name_prefix, url_prefix=url_prefix
+            )
 
         chalice_app.route = route
         chalice_app.register_blueprint = register_blueprint
