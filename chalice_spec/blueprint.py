@@ -17,6 +17,7 @@ def chalice_spec_blueprint(spec: APISpec, enable_swagger: bool = False):
         return spec.to_dict()
 
     if enable_swagger:
+
         @blueprint.route("/docs")
         def docs():
             # Courtesy of Stephan Fitzpatrick (@knowsuchagency)
@@ -47,6 +48,8 @@ def chalice_spec_blueprint(spec: APISpec, enable_swagger: bool = False):
                     </body>
                     </html>
                 """
-            return Response(body=html, status_code=200, headers={"Content-Type": "text/html"})
+            return Response(
+                body=html, status_code=200, headers={"Content-Type": "text/html"}
+            )
 
     return blueprint
