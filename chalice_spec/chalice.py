@@ -34,6 +34,7 @@ class BlueprintWithSpec(Blueprint):
     A Chalice Blueprint that has been augmented with chalice-spec to
     enable easy OpenAPI documentation.
     """
+
     def __init__(self, import_name: str) -> None:
         self._chalice_spec_docs = []
         super(BlueprintWithSpec, self).__init__(import_name)
@@ -53,15 +54,19 @@ class ChaliceWithSpec(Chalice):
     A Chalice app that has been augmented with chalice-spec to enable
     easy OpenAPI documentation.
     """
+
     def __init__(self, app_name: str, spec: APISpec, generate_default_docs=False):
         super().__init__(app_name)
 
         self.__spec = spec
         self.__generate_default_docs = generate_default_docs
 
-    def register_blueprint(self, blueprint: Union[Blueprint, BlueprintWithSpec],
-                           name_prefix: Optional[str] = None,
-                           url_prefix: Optional[str] = None) -> None:
+    def register_blueprint(
+        self,
+        blueprint: Union[Blueprint, BlueprintWithSpec],
+        name_prefix: Optional[str] = None,
+        url_prefix: Optional[str] = None,
+    ) -> None:
         if isinstance(blueprint, BlueprintWithSpec):
             for path, methods, docs in blueprint._chalice_spec_docs:
                 path = (url_prefix if url_prefix else "") + path
@@ -73,9 +78,9 @@ class ChaliceWithSpec(Chalice):
                     operations = docs.build_operations(self.__spec, methods)
                     self.__spec.path(path, operations=operations, summary=docs.summary)
 
-        return super(ChaliceWithSpec, self).register_blueprint(blueprint,
-                                                               name_prefix=name_prefix,
-                                                               url_prefix=url_prefix)
+        return super(ChaliceWithSpec, self).register_blueprint(
+            blueprint, name_prefix=name_prefix, url_prefix=url_prefix
+        )
 
     def route(self, path: str, **kwargs: Any) -> Callable[..., Any]:
         docs: Docs = kwargs.pop("docs", None)
