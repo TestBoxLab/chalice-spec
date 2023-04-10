@@ -70,29 +70,4 @@ class ChalicePlugin(BasePlugin):
 
             return original_route(path, **kwargs)
 
-        def blueprint_route(prefix_url: str):
-            def inner_route(path, **kwargs):
-                return route(prefix_url + path, **kwargs)
-
-            return inner_route
-
-        original_register_blueprint = chalice_app.register_blueprint
-
-        def register_blueprint(
-            blueprint: Blueprint,
-            name_prefix: Optional[str] = None,
-            url_prefix: Optional[str] = None,
-        ):
-            """
-            Register a new blueprint. Blueprints use something akin to an "inversion of control."
-            The main Chalice app maintains no state of the blueprints that are registered to it.
-            As such, we will have to maintain a list so that we can traverse all the blueprints
-            when looking at building our spec.
-            """
-            blueprint.route = blueprint_route(url_prefix)
-            return original_register_blueprint(
-                blueprint, name_prefix=name_prefix, url_prefix=url_prefix
-            )
-
         chalice_app.route = route
-        chalice_app.register_blueprint = register_blueprint
