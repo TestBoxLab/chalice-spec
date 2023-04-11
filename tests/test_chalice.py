@@ -364,3 +364,77 @@ def test_contract_violations():
                 Resp(code=200, model=TestSchema),
             ]
         )
+
+
+# Test 8: setting up parameters for the endpoint
+def test_parameters():
+    app, spec = setup_test()
+
+    @app.route(
+        "/post/{id}",
+        methods=["GET"],
+        docs=Docs(response=AnotherSchema),
+    )
+    def get_post():
+        pass
+
+    assert spec.to_dict() == {
+        "paths": {
+            "/post/{id}": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Success",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/AnotherSchema"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "tags": [
+                        "/post"
+                    ]
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": True
+                    }
+                ]
+            }
+        },
+        "info": {
+            "title": "Test Schema",
+            "version": "0.0.0"
+        },
+        "openapi": "3.0.1",
+        "components": {
+            "schemas": {
+                "AnotherSchema": {
+                    "title": "AnotherSchema",
+                    "type": "object",
+                    "properties": {
+                        "nintendo": {
+                            "title": "Nintendo",
+                            "type": "string"
+                        },
+                        "atari": {
+                            "title": "Atari",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "nintendo",
+                        "atari"
+                    ]
+                }
+            }
+        }
+    }
