@@ -58,7 +58,8 @@ def test_response_spec():
                                 }
                             },
                         }
-                    }
+                    },
+                    "tags": ["/"]
                 }
             }
         },
@@ -120,6 +121,7 @@ def test_request_response_spec():
                             },
                         }
                     },
+                    "tags": ["/test"]
                 }
             }
         },
@@ -192,6 +194,7 @@ def test_operation():
                             },
                         }
                     },
+                    "tags": ["/ops"]
                 }
             }
         },
@@ -282,6 +285,7 @@ def test_shorthand():
                             },
                         }
                     },
+                    "tags": ["/"]
                 },
                 "put": {
                     "requestBody": {
@@ -303,6 +307,7 @@ def test_shorthand():
                             },
                         }
                     },
+                    "tags": ["/"]
                 },
             }
         },
