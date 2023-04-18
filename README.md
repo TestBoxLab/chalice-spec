@@ -25,16 +25,37 @@ poetry add chalice apispec pydantic
 
 ## Setup
 
-First, instantiate your APISpec object with *both* the Pydantic and Chalice plug-ins, assuming
-you need the functionality of each. While the Pydantic plugin can be used alone, you currently must use
-the Pydantic plugin with the Chalice plugin.
+chalice-spec provides a subclass of the main `Chalice` class, called `ChaliceWithSpec`.
+Here is an example of how to get started:
+
+Before:
 
 ```python
+from chalice import Chalice
+
 app = Chalice(app_name="hello_world")
+```
+
+After:
+
+```python
+from chalice_spec import ChaliceWithSpec, PydanticPlugin
+from apispec import APISpec
+
 spec = APISpec(chalice_app=app,
                ...,
-               plugins=[PydanticPlugin(), ChalicePlugin()])
+               plugins=[PydanticPlugin()])
+
+app = ChaliceWithSpec(app_name="hello_world", spec=spec)
 ```
+
+If you use
+
+```python
+ChaliceWithSpec(..., generate_default_docs=True)
+```
+
+the plugin will generate empty docs (with empty request and response schemas) for every endpoint that you've defined in your app. This can be useful as a starting point / overview while developing.
 
 ## Usage
 
