@@ -115,7 +115,7 @@ class ChaliceWithSpec(Chalice):
 
             if docs:
                 operations = docs.build_operations(self.__spec, methods)
-                
+
                 # Infer path parameters
                 get_params = r"{([^}]+)}"
                 path_params = []
@@ -166,4 +166,3 @@ class ChaliceWithSpec(Chalice):
             return super(ChaliceWithSpec, self).route(path, **kwargs)(func)
 
         return route_decorator
-

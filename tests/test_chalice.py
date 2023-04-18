@@ -57,7 +57,7 @@ def test_response_spec():
                             },
                         }
                     },
-                    "tags": ["/"]
+                    "tags": ["/"],
                 }
             }
         },
@@ -119,7 +119,7 @@ def test_request_response_spec():
                             },
                         }
                     },
-                    "tags": ["/test"]
+                    "tags": ["/test"],
                 }
             }
         },
@@ -192,7 +192,7 @@ def test_operation():
                             },
                         }
                     },
-                    "tags": ["/ops"]
+                    "tags": ["/ops"],
                 }
             }
         },
@@ -283,7 +283,7 @@ def test_shorthand():
                             },
                         }
                     },
-                    "tags": ["/"]
+                    "tags": ["/"],
                 },
                 "put": {
                     "requestBody": {
@@ -305,7 +305,7 @@ def test_shorthand():
                             },
                         }
                     },
-                    "tags": ["/"]
+                    "tags": ["/"],
                 },
             }
         },
@@ -389,29 +389,22 @@ def test_parameters():
                                         "$ref": "#/components/schemas/AnotherSchema"
                                     }
                                 }
-                            }
+                            },
                         }
                     },
-                    "tags": [
-                        "/post"
-                    ]
+                    "tags": ["/post"],
                 },
                 "parameters": [
                     {
                         "in": "path",
                         "name": "id",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "required": True
+                        "schema": {"type": "string"},
+                        "required": True,
                     }
-                ]
+                ],
             }
         },
-        "info": {
-            "title": "Test Schema",
-            "version": "0.0.0"
-        },
+        "info": {"title": "Test Schema", "version": "0.0.0"},
         "openapi": "3.0.1",
         "components": {
             "schemas": {
@@ -419,20 +412,11 @@ def test_parameters():
                     "title": "AnotherSchema",
                     "type": "object",
                     "properties": {
-                        "nintendo": {
-                            "title": "Nintendo",
-                            "type": "string"
-                        },
-                        "atari": {
-                            "title": "Atari",
-                            "type": "string"
-                        }
+                        "nintendo": {"title": "Nintendo", "type": "string"},
+                        "atari": {"title": "Atari", "type": "string"},
                     },
-                    "required": [
-                        "nintendo",
-                        "atari"
-                    ]
+                    "required": ["nintendo", "atari"],
                 }
             }
-        }
+        },
     }
