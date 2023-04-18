@@ -1,14 +1,13 @@
 import re
 
-from chalice_spec.docs import Docs, Operation, trim_docstring
+from chalice_spec.docs import trim_docstring
+from chalice_spec import Docs, Operation
 from typing import Any, Callable, Optional, Union, List
 
 from apispec import APISpec
 from chalice import Blueprint
 from chalice.app import Chalice
 from pydantic import BaseModel
-
-from chalice_spec import Docs, Operation
 
 
 def default_docs_for_methods(methods: List[str]):
@@ -157,7 +156,12 @@ class ChaliceWithSpec(Chalice):
                                 1
                             ].strip()
 
-                self.__spec.path(path, operations=operations, summary=docs.summary)
+                self.__spec.path(
+                    path,
+                    operations=operations,
+                    summary=docs.summary,
+                    parameters=path_params,
+                )
 
             return super(ChaliceWithSpec, self).route(path, **kwargs)(func)
 
