@@ -1,11 +1,13 @@
+import re
+
+from chalice_spec.docs import trim_docstring
+from chalice_spec import Docs, Operation
 from typing import Any, Callable, Optional, Union, List
 
 from apispec import APISpec
 from chalice import Blueprint
 from chalice.app import Chalice
 from pydantic import BaseModel
-
-from chalice_spec import Docs, Operation
 
 
 def default_docs_for_methods(methods: List[str]):
@@ -104,14 +106,63 @@ class ChaliceWithSpec(Chalice):
         )
 
     def route(self, path: str, **kwargs: Any) -> Callable[..., Any]:
-        docs: Docs = kwargs.pop("docs", None)
-        methods = [method.lower() for method in kwargs.get("methods", ["get"])]
+        def route_decorator(func):
+            docs: Docs = kwargs.pop("docs", None)
+            methods = [method.lower() for method in kwargs.get("methods", ["get"])]
 
-        if docs is None and self.__generate_default_docs:
-            docs = default_docs_for_methods(methods)
+            if docs is None and self.__generate_default_docs:
+                docs = default_docs_for_methods(methods)
 
-        if docs:
-            operations = docs.build_operations(self.__spec, methods)
-            self.__spec.path(path, operations=operations, summary=docs.summary)
+            if docs:
+                operations = docs.build_operations(self.__spec, methods)
 
-        return super(ChaliceWithSpec, self).route(path, **kwargs)
+                # Infer path parameters
+                get_params = r"{([^}]+)}"
+                path_params = []
+                for param in re.findall(get_params, path):
+                    path_params.append(
+                        {
+                            "in": "path",
+                            "name": param,
+                            "schema": {"type": "string"},
+                            "required": True,
+                        }
+                    )
+
+                # Infer tags
+                for operation in operations:
+                    if (
+                        "tags" not in operations[operation]
+                        or operations[operation]["tags"] is None
+                    ):
+                        operations[operation]["tags"] = [
+                            "/" + path.lstrip("/").split("/", 1)[0]
+                        ]
+
+                # Infer summary and description from route docstrings
+                if func.__doc__:
+                    split_docstring = trim_docstring(func.__doc__).split("\n", 1)
+                    for operation in operations:
+                        if (
+                            "summary" not in operations[operation]
+                            or operations[operation]["summary"] is None
+                        ):
+                            operations[operation]["summary"] = split_docstring[0]
+                        if (
+                            "description" not in operations[operation]
+                            or operations[operation]["description"] is None
+                        ) and len(split_docstring) == 2:
+                            operations[operation]["description"] = split_docstring[
+                                1
+                            ].strip()
+
+                self.__spec.path(
+                    path,
+                    operations=operations,
+                    summary=docs.summary,
+                    parameters=path_params,
+                )
+
+            return super(ChaliceWithSpec, self).route(path, **kwargs)(func)
+
+        return route_decorator

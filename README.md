@@ -90,6 +90,56 @@ def example():
     pass
 ```
 
+## Auto-Generation
+
+### Default Empty Docs
+
+If you use:
+```python
+ChalicePlugin(generate_default_docs=True)
+```
+the plugin will generate empty docs (with empty request and response schemas) for every endpoint that you've defined in your app. This can be useful as a starting point / overview while developing.
+
+### Path Parameters
+
+These are inferred from the path itself. Any identifiers inside curly braces in a path is added as a string path parameter for that path. e.g. for the path `/users/{id}/friends/{f_id}`, the path parameters `id` and `f_id` will be added to the spec.
+
+To disable this behaviour, define your own parameters or set them to an empty list:
+
+```python
+Operation(request=MySchema, response=MyOtherSchema, parameters=[])
+```
+
+### Tags
+
+Tags are used in things like Swagger to group endpoints into logical sets. If you don't supply any tags, chalice-spec will add a tag for each endpoint that is the first segment of the path. e.g. `/users`, `/users/{id}/friends`, and `/users/{id}/posts` will all be tagged with `users`.
+
+To disable this behaviour, define `tags` in your operation (either with the tags you want, or an empty list):
+
+```python
+Operation(request=MySchema, response=MyOtherSchema, tags=[])
+```
+
+### Summary and Description
+
+Endpoint summaries and descriptions are inferred from the route docstring. The first line of the docstring is used as the summary, and all other lines become the description:
+
+```python
+@app.route('/users/{id}', methods=['GET'], docs=Docs(response=UserSchema))
+def get_user(id):
+    """
+    Retrieve a user object.
+    User's can't retrieve other users using this endpoint - only themselves.
+    """
+```
+
+To disable this behaviour, you can define your own summary/description or set them to empty strings:
+
+```python
+Operation(request=MySchema, response=MyOtherSchema, summary='', description='')
+```
+
+
 ### API
 
 - [ ] TODO: this section coming soon!
