@@ -42,8 +42,7 @@ After:
 from chalice_spec import ChaliceWithSpec, PydanticPlugin
 from apispec import APISpec
 
-spec = APISpec(chalice_app=app,
-               ...,
+spec = APISpec(...,
                plugins=[PydanticPlugin()])
 
 app = ChaliceWithSpec(app_name="hello_world", spec=spec)
