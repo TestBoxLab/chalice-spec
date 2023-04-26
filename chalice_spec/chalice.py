@@ -50,7 +50,7 @@ class BlueprintWithSpec(Blueprint):
 
             self._chalice_spec_docs.append((path, methods, docs, func))
 
-            return super(BlueprintWithSpec, self).route(path, **kwargs)
+            return super(BlueprintWithSpec, self).route(path, **kwargs)(func)
 
         return route_decorator
 
