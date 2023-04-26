@@ -27,6 +27,7 @@ def test_blueprint_one():
         "paths": {
             "/prefix/hello-world/deep": {
                 "get": {
+                    "tags": ["/prefix"],
                     "responses": {
                         "200": {
                             "description": "Success",
@@ -38,7 +39,7 @@ def test_blueprint_one():
                                 }
                             },
                         }
-                    }
+                    },
                 }
             }
         },
@@ -70,6 +71,8 @@ def test_blueprint_two():
         "paths": {
             "/another-world/post": {
                 "post": {
+                    "tags": ["/another-world"],
+                    "summary": "this is a docstring",
                     "responses": {
                         "200": {
                             "description": "Success",
@@ -81,7 +84,7 @@ def test_blueprint_two():
                                 }
                             },
                         }
-                    }
+                    },
                 }
             }
         },
@@ -122,8 +125,17 @@ def test_blueprint_three_with_default_docs():
     app.register_blueprint(blueprint_three)
     assert spec.to_dict() == {
         "paths": {
-            "/another-world-3/post": {
+            "/another-world-3/posts/{id}": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": True,
+                        "schema": {"type": "string"},
+                    }
+                ],
                 "post": {
+                    "tags": ["/another-world-3"],
                     "requestBody": {
                         "content": {
                             "application/json": {
@@ -141,7 +153,7 @@ def test_blueprint_three_with_default_docs():
                             },
                         }
                     },
-                }
+                },
             }
         },
         "info": {"title": "Test Schema", "version": "0.0.0"},
@@ -167,6 +179,7 @@ def test_two_blueprints():
         "paths": {
             "/prefixed/hello-world/deep": {
                 "get": {
+                    "tags": ["/prefixed"],
                     "responses": {
                         "200": {
                             "description": "Success",
@@ -178,11 +191,13 @@ def test_two_blueprints():
                                 }
                             },
                         }
-                    }
+                    },
                 }
             },
             "/another-world/post": {
                 "post": {
+                    "summary": "this is a docstring",
+                    "tags": ["/another-world"],
                     "responses": {
                         "200": {
                             "description": "Success",
@@ -194,7 +209,7 @@ def test_two_blueprints():
                                 }
                             },
                         }
-                    }
+                    },
                 }
             },
         },

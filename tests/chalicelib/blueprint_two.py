@@ -9,4 +9,5 @@ blueprint_two = BlueprintWithSpec(__name__)
     "/another-world/post", docs=Docs(post=TestSchema), methods=["POST"]
 )
 def the_second_blueprint_route():
+    """this is a docstring"""
     pass
