@@ -82,8 +82,10 @@ class ChaliceWithSpec(Chalice):
         # and so on!
     """
 
-    def __init__(self, app_name: str, spec: APISpec, generate_default_docs=False):
-        super().__init__(app_name)
+    def __init__(
+        self, app_name: str, spec: APISpec, generate_default_docs=False, **kwargs
+    ):
+        super().__init__(app_name, **kwargs)
 
         self.__spec = spec
         self.__generate_default_docs = generate_default_docs
