@@ -39,18 +39,13 @@ class BlueprintWithSpec(Blueprint):
 
     def __init__(self, import_name: str, generate_default_docs=False) -> None:
         self._chalice_spec_docs = []
-        self.__generate_default_docs = generate_default_docs
         super(BlueprintWithSpec, self).__init__(import_name)
 
     def route(self, path: str, **kwargs: Any) -> Callable[..., Any]:
         docs: Docs = kwargs.pop("docs", None)
 
         methods = [method.lower() for method in kwargs.get("methods", ["get"])]
-        if docs is None and self.__generate_default_docs:
-            docs = default_docs_for_methods(methods)
-
-        if docs:
-            self._chalice_spec_docs.append((path, methods, docs))
+        self._chalice_spec_docs.append((path, methods, docs))
 
         return super(BlueprintWithSpec, self).route(path, **kwargs)
 

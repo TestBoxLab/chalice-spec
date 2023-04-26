@@ -4,14 +4,16 @@ from chalice_spec import PydanticPlugin
 from chalice_spec.chalice import ChaliceWithSpec
 
 
-def setup_test():
+def setup_test(generate_default_docs=False):
     spec = APISpec(
         title="Test Schema",
         openapi_version="3.0.1",
         version="0.0.0",
         plugins=[PydanticPlugin()],
     )
-    app = ChaliceWithSpec(app_name="test", spec=spec)
+    app = ChaliceWithSpec(
+        app_name="test", spec=spec, generate_default_docs=generate_default_docs
+    )
     return app, spec
 
 
@@ -101,10 +103,22 @@ def test_blueprint_two():
     }
 
 
-def test_blueprint_three():
+def test_blueprint_three_no_default_docs():
     from .chalicelib.blueprint_three import blueprint_three
 
-    app, spec = setup_test()
+    app, spec = setup_test(generate_default_docs=False)
+    app.register_blueprint(blueprint_three)
+    assert spec.to_dict() == {
+        "paths": {},
+        "info": {"title": "Test Schema", "version": "0.0.0"},
+        "openapi": "3.0.1",
+    }
+
+
+def test_blueprint_three_with_default_docs():
+    from .chalicelib.blueprint_three import blueprint_three
+
+    app, spec = setup_test(generate_default_docs=True)
     app.register_blueprint(blueprint_three)
     assert spec.to_dict() == {
         "paths": {
