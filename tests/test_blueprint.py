@@ -101,6 +101,55 @@ def test_blueprint_two():
     }
 
 
+def test_blueprint_three():
+    from .chalicelib.blueprint_three import blueprint_three
+
+    app, spec = setup_test()
+    app.register_blueprint(blueprint_three)
+    assert spec.to_dict() == {
+        "paths": {
+            "/another-world-3/post": {
+                "post": {
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": { 
+                                    "$ref": "#/components/schemas/BaseModel" 
+                                }
+                            }
+                        }
+                    }, 
+                    "responses": {
+                        "200": {
+                            "description": "Success", 
+                            "content": {
+                                "application/json": {
+                                    "schema": { 
+                                        "$ref": "#/components/schemas/BaseModel" 
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }, 
+        "info": {
+            "title": "Test Schema", 
+            "version": "0.0.0"
+        }, 
+        "openapi": "3.0.1", 
+        "components": {
+            "schemas": {
+                "BaseModel": {
+                    "title": "BaseModel", 
+                    "type": "object", 
+                    "properties": {}
+                }
+            }
+        }
+    }
+
 def test_two_blueprints():
     app, spec = setup_test()
 
