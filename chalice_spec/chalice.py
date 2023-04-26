@@ -37,7 +37,7 @@ class BlueprintWithSpec(Blueprint):
     enable easy OpenAPI documentation.
     """
 
-    def __init__(self, import_name: str, generate_default_docs=False) -> None:
+    def __init__(self, import_name: str) -> None:
         self._chalice_spec_docs = []
         super(BlueprintWithSpec, self).__init__(import_name)
 
