@@ -113,42 +113,32 @@ def test_blueprint_three():
                     "requestBody": {
                         "content": {
                             "application/json": {
-                                "schema": { 
-                                    "$ref": "#/components/schemas/BaseModel" 
-                                }
+                                "schema": {"$ref": "#/components/schemas/BaseModel"}
                             }
                         }
-                    }, 
+                    },
                     "responses": {
                         "200": {
-                            "description": "Success", 
+                            "description": "Success",
                             "content": {
                                 "application/json": {
-                                    "schema": { 
-                                        "$ref": "#/components/schemas/BaseModel" 
-                                    }
+                                    "schema": {"$ref": "#/components/schemas/BaseModel"}
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
-        }, 
-        "info": {
-            "title": "Test Schema", 
-            "version": "0.0.0"
-        }, 
-        "openapi": "3.0.1", 
+        },
+        "info": {"title": "Test Schema", "version": "0.0.0"},
+        "openapi": "3.0.1",
         "components": {
             "schemas": {
-                "BaseModel": {
-                    "title": "BaseModel", 
-                    "type": "object", 
-                    "properties": {}
-                }
+                "BaseModel": {"title": "BaseModel", "type": "object", "properties": {}}
             }
-        }
+        },
     }
+
 
 def test_two_blueprints():
     app, spec = setup_test()
