@@ -37,8 +37,9 @@ class BlueprintWithSpec(Blueprint):
     enable easy OpenAPI documentation.
     """
 
-    def __init__(self, import_name: str) -> None:
+    def __init__(self, import_name: str, tags=None) -> None:
         self._chalice_spec_docs = []
+        self._chalice_spec_tags = tags
         super(BlueprintWithSpec, self).__init__(import_name)
 
     def route(self, path: str, **kwargs: Any) -> Callable[..., Any]:
@@ -87,7 +88,7 @@ class ChaliceWithSpec(Chalice):
         self.__spec = spec
         self.__generate_default_docs = generate_default_docs
 
-    def decorate(self, docs, path, methods, func) -> None:
+    def decorate(self, docs, path, methods, func, tags) -> None:
         if docs is None and self.__generate_default_docs:
             docs = default_docs_for_methods(methods)
 
@@ -113,9 +114,12 @@ class ChaliceWithSpec(Chalice):
                     "tags" not in operations[operation]
                     or operations[operation]["tags"] is None
                 ):
-                    operations[operation]["tags"] = [
-                        "/" + path.lstrip("/").split("/", 1)[0]
-                    ]
+                    if tags:
+                        operations[operation]["tags"] = tags
+                    else:
+                        operations[operation]["tags"] = [
+                            "/" + path.lstrip("/").split("/", 1)[0]
+                        ]
 
             # Infer summary and description from route docstrings
             if func.__doc__:
@@ -151,7 +155,7 @@ class ChaliceWithSpec(Chalice):
             for path, methods, docs, func in blueprint._chalice_spec_docs:
                 path = (url_prefix if url_prefix else "") + path
 
-                self.decorate(docs, path, methods, func)
+                self.decorate(docs, path, methods, func, blueprint._chalice_spec_tags)
 
         return super(ChaliceWithSpec, self).register_blueprint(
             blueprint, name_prefix=name_prefix, url_prefix=url_prefix
@@ -162,7 +166,7 @@ class ChaliceWithSpec(Chalice):
             docs: Docs = kwargs.pop("docs", None)
             methods = [method.lower() for method in kwargs.get("methods", ["get"])]
 
-            self.decorate(docs, path, methods, func)
+            self.decorate(docs, path, methods, func, None)
 
             return super(ChaliceWithSpec, self).route(path, **kwargs)(func)
 

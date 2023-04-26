@@ -135,7 +135,7 @@ def test_blueprint_three_with_default_docs():
                     }
                 ],
                 "post": {
-                    "tags": ["/another-world-3"],
+                    "tags": ["tag 1"],
                     "requestBody": {
                         "content": {
                             "application/json": {
