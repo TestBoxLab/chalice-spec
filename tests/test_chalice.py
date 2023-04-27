@@ -420,3 +420,136 @@ def test_parameters():
             }
         },
     }
+
+
+# Test 9: different content_types
+def test_content_types():
+    app, spec = setup_test()
+
+    @app.route(
+        "/posts",
+        methods=["POST"],
+        content_types=["multipart/form-data"],
+        docs=Docs(request=TestSchema, response=AnotherSchema),
+    )
+    def get_post():
+        pass
+
+    assert spec.to_dict() == {
+        "paths": {
+            "/posts": {
+                "post": {
+                    "requestBody": {
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {"$ref": "#/components/schemas/TestSchema"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Success",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/AnotherSchema"
+                                    }
+                                }
+                            },
+                        }
+                    },
+                    "tags": ["/posts"],
+                }
+            }
+        },
+        "info": {"title": "Test Schema", "version": "0.0.0"},
+        "openapi": "3.0.1",
+        "components": {
+            "schemas": {
+                "TestSchema": {
+                    "title": "TestSchema",
+                    "type": "object",
+                    "properties": {
+                        "hello": {"title": "Hello", "type": "string"},
+                        "world": {"title": "World", "type": "integer"},
+                    },
+                    "required": ["hello", "world"],
+                },
+                "AnotherSchema": {
+                    "title": "AnotherSchema",
+                    "type": "object",
+                    "properties": {
+                        "nintendo": {"title": "Nintendo", "type": "string"},
+                        "atari": {"title": "Atari", "type": "string"},
+                    },
+                    "required": ["nintendo", "atari"],
+                },
+            }
+        },
+    }
+
+
+def test_content_types_with_operation():
+    app, spec = setup_test()
+
+    @app.route(
+        "/posts",
+        methods=["POST"],
+        content_types=["multipart/form-data"],
+        docs=Docs(post=Op(request=TestSchema, response=AnotherSchema)),
+    )
+    def get_post():
+        pass
+
+    assert spec.to_dict() == {
+        "paths": {
+            "/posts": {
+                "post": {
+                    "requestBody": {
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {"$ref": "#/components/schemas/TestSchema"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Success",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/AnotherSchema"
+                                    }
+                                }
+                            },
+                        }
+                    },
+                    "tags": ["/posts"],
+                }
+            }
+        },
+        "info": {"title": "Test Schema", "version": "0.0.0"},
+        "openapi": "3.0.1",
+        "components": {
+            "schemas": {
+                "TestSchema": {
+                    "title": "TestSchema",
+                    "type": "object",
+                    "properties": {
+                        "hello": {"title": "Hello", "type": "string"},
+                        "world": {"title": "World", "type": "integer"},
+                    },
+                    "required": ["hello", "world"],
+                },
+                "AnotherSchema": {
+                    "title": "AnotherSchema",
+                    "type": "object",
+                    "properties": {
+                        "nintendo": {"title": "Nintendo", "type": "string"},
+                        "atari": {"title": "Atari", "type": "string"},
+                    },
+                    "required": ["nintendo", "atari"],
+                },
+            }
+        },
+    }

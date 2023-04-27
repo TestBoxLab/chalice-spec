@@ -10,7 +10,9 @@ from chalice.app import Chalice
 from pydantic import BaseModel
 
 
-def default_docs_for_methods(methods: List[str]):
+def default_docs_for_methods(
+    methods: List[str], content_types: Optional[List[str]] = None
+):
     """
     Generate default documentation if desired.
 
@@ -19,6 +21,7 @@ def default_docs_for_methods(methods: List[str]):
     return Docs(
         **{
             method: Operation(
+                content_types=content_types,
                 response=BaseModel,
                 request=(
                     None
@@ -47,8 +50,9 @@ class BlueprintWithSpec(Blueprint):
             docs: Docs = kwargs.pop("docs", None)
 
             methods = [method.lower() for method in kwargs.get("methods", ["get"])]
+            content_types = kwargs.get("content_types", ["application/json"])
 
-            self._chalice_spec_docs.append((path, methods, docs, func))
+            self._chalice_spec_docs.append((path, methods, content_types, docs, func))
 
             return super(BlueprintWithSpec, self).route(path, **kwargs)(func)
 
@@ -90,12 +94,12 @@ class ChaliceWithSpec(Chalice):
         self.__spec = spec
         self.__generate_default_docs = generate_default_docs
 
-    def decorate(self, docs, path, methods, func, tags) -> None:
+    def decorate(self, docs, path, methods, content_types, func, tags) -> None:
         if docs is None and self.__generate_default_docs:
-            docs = default_docs_for_methods(methods)
+            docs = default_docs_for_methods(methods, content_types)
 
         if docs:
-            operations = docs.build_operations(self.__spec, methods)
+            operations = docs.build_operations(self.__spec, methods, content_types)
 
             # Infer path parameters
             get_params = r"{([^}]+)}"
@@ -154,10 +158,23 @@ class ChaliceWithSpec(Chalice):
         url_prefix: Optional[str] = None,
     ) -> None:
         if isinstance(blueprint, BlueprintWithSpec):
-            for path, methods, docs, func in blueprint._chalice_spec_docs:
+            for (
+                path,
+                methods,
+                content_types,
+                docs,
+                func,
+            ) in blueprint._chalice_spec_docs:
                 path = (url_prefix if url_prefix else "") + path
 
-                self.decorate(docs, path, methods, func, blueprint._chalice_spec_tags)
+                self.decorate(
+                    docs,
+                    path,
+                    methods,
+                    content_types,
+                    func,
+                    blueprint._chalice_spec_tags,
+                )
 
         return super(ChaliceWithSpec, self).register_blueprint(
             blueprint, name_prefix=name_prefix, url_prefix=url_prefix
@@ -167,8 +184,9 @@ class ChaliceWithSpec(Chalice):
         def route_decorator(func):
             docs: Docs = kwargs.pop("docs", None)
             methods = [method.lower() for method in kwargs.get("methods", ["get"])]
+            content_types = kwargs.pop("content_types", None)
 
-            self.decorate(docs, path, methods, func, None)
+            self.decorate(docs, path, methods, content_types, func, None)
 
             return super(ChaliceWithSpec, self).route(path, **kwargs)(func)
 
