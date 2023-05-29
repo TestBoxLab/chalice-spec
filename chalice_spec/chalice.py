@@ -184,7 +184,7 @@ class ChaliceWithSpec(Chalice):
         def route_decorator(func):
             docs: Docs = kwargs.pop("docs", None)
             methods = [method.lower() for method in kwargs.get("methods", ["get"])]
-            content_types = kwargs.pop("content_types", None)
+            content_types = kwargs.get("content_types", None)
 
             self.decorate(docs, path, methods, content_types, func, None)
 
