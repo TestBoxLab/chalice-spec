@@ -33,6 +33,7 @@ class Operation:
         description: str = None,
         tags: List[str] = None,
         parameters: List[Dict] = None,
+        content_types: List[str] = None,
         request: Optional[Type[BaseModel]] = None,
         response: Optional[Union[Response, Type[BaseModel]]] = None,
         responses: Optional[List[Response]] = None,
@@ -42,6 +43,7 @@ class Operation:
         self.tags = tags
         self.parameters = parameters
 
+        self.content_types = content_types
         self.request = request
 
         if response and responses:
@@ -91,12 +93,14 @@ class Docs:
         delete: Method = None,
         head: Method = None,
         options: Method = None,
+        content_types: List[str] = None,
         request: Type[BaseModel] = None,
         response: Union[Response, Type[BaseModel]] = None,
         responses: List[Response] = None,
     ):
         self.summary = summary
 
+        self.content_types = content_types
         self.request = request
         self.response = response
         self.responses = responses
@@ -118,7 +122,9 @@ class Docs:
                     )
 
     @classmethod
-    def _build_operation_from_operation(cls, method: Operation, spec: APISpec):
+    def _build_operation_from_operation(
+        cls, method: Operation, spec: APISpec, content_types: List[str] = None
+    ):
         operation = {}
 
         if method.request:
@@ -126,9 +132,16 @@ class Docs:
                 spec.components.schema(
                     method.request.__name__, model=method.request, spec=spec
                 )
+            content_type = (
+                method.content_types[0]
+                if method.content_types
+                else content_types[0]
+                if content_types
+                else "application/json"
+            )
             operation["requestBody"] = {
                 "content": {
-                    "application/json": {
+                    content_type: {
                         "schema": method.request.__name__,
                     }
                 }
@@ -167,25 +180,36 @@ class Docs:
         return operation
 
     @classmethod
-    def _build_operation_from_model(cls, model: Type[BaseModel], spec: APISpec):
-        return cls._build_operation_from_operation(Operation(response=model), spec)
+    def _build_operation_from_model(
+        cls, model: Type[BaseModel], spec: APISpec, content_types: List[str] = None
+    ):
+        return cls._build_operation_from_operation(
+            Operation(content_types=content_types, response=model), spec
+        )
 
     @classmethod
-    def _build_operation(cls, method: Method, spec: APISpec):
+    def _build_operation(
+        cls, method: Method, spec: APISpec, content_types: List[str] = None
+    ):
         if isinstance(method, Operation):
-            return cls._build_operation_from_operation(method, spec)
+            return cls._build_operation_from_operation(method, spec, content_types)
         else:
-            return cls._build_operation_from_model(method, spec)
+            return cls._build_operation_from_model(method, spec, content_types)
 
-    def _build_simple_operation(self, spec: APISpec):
+    def _build_simple_operation(self, spec: APISpec, content_types: List[str] = None):
         return self._build_operation_from_operation(
             Operation(
-                request=self.request, response=self.response, responses=self.responses
+                content_types=content_types,
+                request=self.request,
+                response=self.response,
+                responses=self.responses,
             ),
             spec,
         )
 
-    def build_operations(self, spec: APISpec, methods: List[str]):
+    def build_operations(
+        self, spec: APISpec, methods: List[str], content_types: List[str] = None
+    ):
         operations = {}
 
         if self.request or self.responses or self.response:
@@ -194,13 +218,15 @@ class Docs:
                     "You can only use Docs short-hand for single-method API routes."
                 )
 
-            operations[methods[0].lower()] = self._build_simple_operation(spec)
+            operations[methods[0].lower()] = self._build_simple_operation(
+                spec, content_types
+            )
 
         else:
             for method in self.methods:
                 if getattr(self, method):
                     operations[method] = self._build_operation(
-                        getattr(self, method), spec
+                        getattr(self, method), spec, content_types
                     )
 
         return operations

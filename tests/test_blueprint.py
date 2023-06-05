@@ -138,7 +138,7 @@ def test_blueprint_three_with_default_docs():
                     "tags": ["tag 1"],
                     "requestBody": {
                         "content": {
-                            "application/json": {
+                            "multipart/form-data": {
                                 "schema": {"$ref": "#/components/schemas/BaseModel"}
                             }
                         }
