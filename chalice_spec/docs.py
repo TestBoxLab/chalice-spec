@@ -37,6 +37,7 @@ class Operation:
         request: Optional[Type[BaseModel]] = None,
         response: Optional[Union[Response, Type[BaseModel]]] = None,
         responses: Optional[List[Response]] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         self.summary = summary
         self.description = description
@@ -45,6 +46,7 @@ class Operation:
 
         self.content_types = content_types
         self.request = request
+        self.security = security
 
         if response and responses:
             raise TypeError("You must only pass one of response or responses")
@@ -176,6 +178,8 @@ class Docs:
             operation["tags"] = method.tags
         if method.parameters:
             operation["parameters"] = method.parameters
+        if method.security:
+            operation["security"] = method.security
 
         return operation
 

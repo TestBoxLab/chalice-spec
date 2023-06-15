@@ -553,3 +553,86 @@ def test_content_types_with_operation():
             }
         },
     }
+
+
+# Test 10: test security
+def test_security():
+    app, spec = setup_test()
+    bearer_auth = {"type": "http", "scheme": "bearer"}
+    spec.components.security_scheme("BearerAuth", bearer_auth)
+
+    @app.route(
+        "/security",
+        methods=["POST"],
+        docs=Docs(
+            post=Op(
+                request=AnotherSchema,
+                response=Resp(
+                    code=201, description="Updated successfully!", model=TestSchema
+                ),
+                security=[{"BearerAuth": []}]
+            )
+        ),
+    )
+    def test():
+        pass
+
+    assert spec.to_dict() == {
+        "paths": {
+            "/security": {
+                "post": {
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/AnotherSchema"}
+                            }
+                        }
+                    },
+                    "security": [{"BearerAuth": []}],
+                    "tags": ["/security"],
+                    "responses": {
+                        "201": {
+                            "description": "Updated successfully!",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/TestSchema"
+                                    }
+                                }
+                            },
+                        }
+                    },
+                }
+            }
+        },
+        "info": {"title": "Test Schema", "version": "0.0.0"},
+        "openapi": "3.0.1",
+        "components": {
+            "schemas": {
+                "AnotherSchema": {
+                    "title": "AnotherSchema",
+                    "type": "object",
+                    "properties": {
+                        "nintendo": {"title": "Nintendo", "type": "string"},
+                        "atari": {"title": "Atari", "type": "string"},
+                    },
+                    "required": ["nintendo", "atari"],
+                },
+                "TestSchema": {
+                    "title": "TestSchema",
+                    "type": "object",
+                    "properties": {
+                        "hello": {"title": "Hello", "type": "string"},
+                        "world": {"title": "World", "type": "integer"},
+                    },
+                    "required": ["hello", "world"],
+                },
+            },
+            "securitySchemes": {
+                "BearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer"
+                }
+            }
+        },
+    }
