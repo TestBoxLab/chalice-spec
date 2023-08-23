@@ -3,8 +3,21 @@ name: tests
 on: [push, pull_request]
 
 jobs:
-  build:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - uses: psf/black@stable
+#        run: |
+#          # stop the build if there are Python syntax errors or undefined names
+#          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+#          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+#          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,12 +35,6 @@ jobs:
           version: 1.2.2
       - name: Install dependencies
         run: poetry install
-      - uses: psf/black@stable
-#        run: |
-#          # stop the build if there are Python syntax errors or undefined names
-#          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-#          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-#          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
           poetry run pytest
