@@ -570,7 +570,7 @@ def test_security():
                 response=Resp(
                     code=201, description="Updated successfully!", model=TestSchema
                 ),
-                security=[{"BearerAuth": []}]
+                security=[{"BearerAuth": []}],
             )
         ),
     )
@@ -628,11 +628,6 @@ def test_security():
                     "required": ["hello", "world"],
                 },
             },
-            "securitySchemes": {
-                "BearerAuth": {
-                    "type": "http",
-                    "scheme": "bearer"
-                }
-            }
+            "securitySchemes": {"BearerAuth": {"type": "http", "scheme": "bearer"}},
         },
     }
