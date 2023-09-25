@@ -432,7 +432,13 @@ def test_content_types():
         "/posts",
         methods=["POST"],
         content_types=["multipart/form-data"],
-        docs=Docs(request=TestSchema, responses=[Resp(model=AnotherSchema, content_type="application/json"), Resp(model=AnotherSchema, content_type="application/xml")]),
+        docs=Docs(
+            request=TestSchema,
+            responses=[
+                Resp(model=AnotherSchema, content_type="application/json"),
+                Resp(model=AnotherSchema, content_type="application/xml")
+            ],
+        ),
     )
     def get_post():
         pass
