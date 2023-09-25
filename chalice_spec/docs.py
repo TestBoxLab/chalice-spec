@@ -17,11 +17,11 @@ class Response:
     """
 
     def __init__(
-            self,
-            model: type,
-            code: int = 200,
-            description: str = "Success",
-            content_type: str = DEFAULT_CONTENT_TYPE
+        self,
+        model: type,
+        code: int = 200,
+        description: str = "Success",
+        content_type: str = DEFAULT_CONTENT_TYPE,
     ):
         self.model = model
         self.code = code
@@ -177,7 +177,7 @@ class Docs:
                             "description": response.description,
                             "content": {},
                         }
-                    responses[code]['content'][content_type] = {
+                    responses[code]["content"][content_type] = {
                         "schema": response.model.__name__
                     }
 

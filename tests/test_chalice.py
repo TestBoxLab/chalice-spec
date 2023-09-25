@@ -421,6 +421,7 @@ def test_parameters():
         },
     }
 
+
 # Test 9: different content_types
 def test_content_types():
     app, spec = setup_test()
@@ -436,7 +437,7 @@ def test_content_types():
             request=TestSchema,
             responses=[
                 Resp(model=AnotherSchema, content_type="application/json"),
-                Resp(model=AnotherSchema, content_type="application/xml")
+                Resp(model=AnotherSchema, content_type="application/xml"),
             ],
         ),
     )
@@ -467,7 +468,7 @@ def test_content_types():
                                     "schema": {
                                         "$ref": "#/components/schemas/AnotherSchema"
                                     }
-                                }
+                                },
                             },
                         }
                     },
