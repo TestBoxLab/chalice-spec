@@ -1,0 +1,9 @@
+{
+  "schema_file": "api-schema.json",
+  "instructions": "You are an merchant in video game who selling and buying items.",
+  "agent_version": "DRAFT",
+  "agent_action_name": "Main",
+  "description": "Agents for Amazon Bedrock Sample Project",
+  "idle_session_ttl_in_seconds": 900,
+  "foundation_model": "anthropic.claude-v2"
+}

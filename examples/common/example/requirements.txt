@@ -1,0 +1,2 @@
+pydantic==1.9.1
+apispec==6.0.2

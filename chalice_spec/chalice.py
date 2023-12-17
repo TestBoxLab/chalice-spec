@@ -1,6 +1,7 @@
 import re
 
 from chalice_spec.docs import trim_docstring
+from chalice_spec.runtime import APIRuntimeHandler, APIRuntime
 from chalice_spec import Docs, Operation
 from typing import Any, Callable, Optional, Union, List
 
@@ -59,7 +60,7 @@ class BlueprintWithSpec(Blueprint):
         return route_decorator
 
 
-class ChaliceWithSpec(Chalice):
+class ChaliceWithSpec(Chalice, APIRuntimeHandler):
     """
     A Chalice app that has been augmented with chalice-spec to enable
     easy OpenAPI documentation.
@@ -87,12 +88,18 @@ class ChaliceWithSpec(Chalice):
     """
 
     def __init__(
-        self, app_name: str, spec: APISpec, generate_default_docs=False, **kwargs
+        self,
+        app_name: str,
+        spec: APISpec,
+        generate_default_docs=False,
+        runtime: Optional[List[APIRuntime]] = None,
+        **kwargs
     ):
         super().__init__(app_name, **kwargs)
 
         self.__spec = spec
         self.__generate_default_docs = generate_default_docs
+        self.set_runtime_handler(runtime)
 
     def decorate(self, docs, path, methods, content_types, func, tags) -> None:
         if docs is None and self.__generate_default_docs:
@@ -191,3 +198,6 @@ class ChaliceWithSpec(Chalice):
             return super(ChaliceWithSpec, self).route(path, **kwargs)(func)
 
         return route_decorator
+
+    def __call__(self, event, context):
+        return APIRuntimeHandler.__call__(self, event, context)

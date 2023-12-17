@@ -1,0 +1,10 @@
+{
+  "version": "2.0",
+  "app_name": "app_sample_purchase_api",
+  "stages": {
+    "dev": {
+      "api_gateway_stage": "api",
+      "api_gateway_policy_file": "resource-policy.json"
+    }
+  }
+}

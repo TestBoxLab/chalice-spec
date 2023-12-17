@@ -56,11 +56,22 @@ ChaliceWithSpec(..., generate_default_docs=True)
 
 the plugin will generate empty docs (with empty request and response schemas) for every endpoint that you've defined in your app. This can be useful as a starting point / overview while developing.
 
+If you want to execute api with Generative AI
+
+```python
+from chalice_spec.runtime import APIRuntimeBedrockAgent
+
+app = ChaliceWithSpec(app_name="hello_world", spec=spec, runtime=APIRuntimeBedrockAgent)
+```
+
+Set runtime to support Agents for Amazon Bedrock.
+
 ## Usage
 
 To document your API, use your existing Pydantic models and add kwargs to Chalice decorators.
 
 **Before:**
+
 ```python
 @app.route('/', methods=["POST"])
 def example():
@@ -68,6 +79,7 @@ def example():
 ```
 
 **After:**
+
 ```python
 @app.route('/', methods=["POST"], docs=Docs(
     post=Operation(request=MySchema)
@@ -94,9 +106,11 @@ def example():
 ### Default Empty Docs
 
 If you use:
+
 ```python
 ChalicePlugin(generate_default_docs=True)
 ```
+
 the plugin will generate empty docs (with empty request and response schemas) for every endpoint that you've defined in your app. This can be useful as a starting point / overview while developing.
 
 ### Path Parameters
@@ -137,7 +151,6 @@ To disable this behaviour, you can define your own summary/description or set th
 ```python
 Operation(request=MySchema, response=MyOtherSchema, summary='', description='')
 ```
-
 
 ### API
 

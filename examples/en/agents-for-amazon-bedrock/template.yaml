@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  HashCode:
+    Type: String
+Resources:
+  ConfigBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub agents-for-bedrock-${AWS::AccountId}-${HashCode}
+  AgentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub AmazonBedrockExecutionRoleForAgents_${HashCode}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: bedrock.amazonaws.com
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+              ArnLike:
+                AWS:SourceArn: !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*
+      Policies:
+        - PolicyName: !Sub AmazonBedrockExecutionRoleForAgents_${HashCode}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource:
+                  - !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/anthropic.claude-v1
+                  - !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/anthropic.claude-v2
+                  - !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/anthropic.claude-instant-v1
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Join
+                  - ""
+                  - - !GetAtt ConfigBucket.Arn
+                    - "/*"
+                Condition:
+                  StringEquals:
+                    aws:PrincipalAccount: !Ref AWS::AccountId
