@@ -426,11 +426,20 @@ def test_parameters():
 def test_content_types():
     app, spec = setup_test()
 
+    with pytest.raises(TypeError):
+        Op(responses=[Resp(model=TestSchema), Resp(model=TestSchema)])
+
     @app.route(
         "/posts",
         methods=["POST"],
         content_types=["multipart/form-data"],
-        docs=Docs(request=TestSchema, response=AnotherSchema),
+        docs=Docs(
+            request=TestSchema,
+            responses=[
+                Resp(model=AnotherSchema, content_type="application/json"),
+                Resp(model=AnotherSchema, content_type="application/xml"),
+            ],
+        ),
     )
     def get_post():
         pass
@@ -454,7 +463,12 @@ def test_content_types():
                                     "schema": {
                                         "$ref": "#/components/schemas/AnotherSchema"
                                     }
-                                }
+                                },
+                                "application/xml": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/AnotherSchema"
+                                    }
+                                },
                             },
                         }
                     },
